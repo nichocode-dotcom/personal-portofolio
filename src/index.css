@@ -1,0 +1,112 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-dark text-slate-100 font-body antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    @apply bg-accent-indigo/30 text-white;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-dark;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-accent-indigo/40 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-accent-indigo/60;
+  }
+}
+
+@layer components {
+  /* Glassmorphism */
+  .glass {
+    @apply bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl;
+  }
+
+  .glass-light {
+    @apply bg-white/[0.06] backdrop-blur-lg border border-white/[0.1] rounded-xl;
+  }
+
+  /* Gradient Text */
+  .gradient-text {
+    @apply bg-gradient-accent bg-clip-text text-transparent;
+  }
+
+  /* Glow Border */
+  .glow-border {
+    position: relative;
+  }
+  .glow-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(99,102,241,0.4), rgba(34,211,238,0.4));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .glow-border:hover::before {
+    opacity: 1;
+  }
+
+  /* Section Styles */
+  section[id] {
+    scroll-margin-top: 4.5rem;
+  }
+
+  .section-padding {
+    @apply py-20 md:py-28 px-4 md:px-8 lg:px-16;
+  }
+
+  .section-container {
+    @apply max-w-6xl mx-auto;
+  }
+
+  /* Button Styles - Snappy & Responsive */
+  .btn-primary {
+    @apply px-7 py-3.5 bg-gradient-accent text-white font-heading font-semibold rounded-xl
+           hover:shadow-glow-indigo transition-all duration-200 hover:scale-[1.02]
+           active:scale-95 text-sm tracking-wide cursor-pointer select-none
+           hover:brightness-110 active:brightness-95;
+  }
+
+  .btn-outline {
+    @apply px-7 py-3.5 border border-accent-indigo/50 text-accent-indigo font-heading font-semibold
+           rounded-xl hover:bg-accent-indigo/10 hover:border-accent-indigo
+           transition-all duration-200 hover:scale-[1.02] active:scale-95 text-sm tracking-wide
+           cursor-pointer select-none active:brightness-95;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
