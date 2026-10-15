@@ -50,12 +50,20 @@ export default function Achievements() {
   const [showAllModal, setShowAllModal] = useState(false);
   const containerRef = useRef(null);
 
+  const isNavigating = useRef(false);
+
   const prevSlide = useCallback(() => {
+    if (isNavigating.current) return;
+    isNavigating.current = true;
     setActiveIndex((prev) => (prev === 0 ? achievements.length - 1 : prev - 1));
+    setTimeout(() => { isNavigating.current = false; }, 200);
   }, []);
 
   const nextSlide = useCallback(() => {
+    if (isNavigating.current) return;
+    isNavigating.current = true;
     setActiveIndex((prev) => (prev === achievements.length - 1 ? 0 : prev + 1));
+    setTimeout(() => { isNavigating.current = false; }, 200);
   }, []);
 
   // Keyboard navigation
@@ -74,8 +82,11 @@ export default function Achievements() {
 
   return (
     <section id="achievements" className="section-padding bg-dark/60 relative overflow-hidden select-none">
-      {/* Background ambient lighting synced to active card color */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-accent-indigo/[0.06] rounded-full blur-[140px] pointer-events-none transition-all duration-700" />
+      {/* Background ambient lighting (GPU-optimized) */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-accent-indigo/[0.06] rounded-full blur-[140px] pointer-events-none"
+        style={{ willChange: 'opacity', transition: 'opacity 0.7s ease-out' }}
+      />
 
       <div className="section-container relative z-10">
         <SectionTitle
@@ -179,17 +190,17 @@ export default function Achievements() {
                     zIndex: zIndex,
                   }}
                   transition={{
-                    type: 'spring',
-                    stiffness: 260,
-                    damping: 26,
+                    duration: 0.65,
+                    ease: [0.16, 1, 0.3, 1], // Smooth apple-grade momentum easing
                   }}
-                  className={`absolute w-[260px] sm:w-[420px] md:w-[480px] h-[170px] sm:h-[260px] md:h-[300px] rounded-2xl overflow-hidden cursor-pointer transition-shadow duration-300 ${
+                  className={`absolute w-[260px] sm:w-[420px] md:w-[480px] h-[170px] sm:h-[260px] md:h-[300px] rounded-2xl overflow-hidden cursor-pointer ${
                     isCenter
                       ? `border-2 ${style.border} ${style.glow} shadow-2xl`
                       : 'border border-white/10 shadow-lg'
                   }`}
                   style={{
                     transformStyle: 'preserve-3d',
+                    willChange: 'transform, opacity',
                   }}
                 >
                   <div className="relative w-full h-full bg-dark-surface rounded-2xl overflow-hidden group">

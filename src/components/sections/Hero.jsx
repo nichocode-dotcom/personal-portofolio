@@ -9,29 +9,32 @@ export default function Hero() {
   const [activeSide, setActiveSide] = useState(null); // 'left' | 'right' | null
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const sectionRef = useRef(null);
+  const rafId = useRef(null);
 
   const handleMouseMove = useCallback((e) => {
     if (window.innerWidth < 768) return;
+    if (!sectionRef.current) return;
 
-    const rect = sectionRef.current?.getBoundingClientRect();
-    if (!rect) return;
-
-    // Parallax offset (-1 to 1)
+    const rect = sectionRef.current.getBoundingClientRect();
     const mx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
     const my = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-    setMousePos({ x: mx, y: my });
 
-    // Dynamic aura bias based on cursor side
-    if (mx < -0.2) {
-      setActiveSide('left');
-    } else if (mx > 0.2) {
-      setActiveSide('right');
-    } else {
-      setActiveSide(null);
-    }
+    if (rafId.current) cancelAnimationFrame(rafId.current);
+
+    rafId.current = requestAnimationFrame(() => {
+      setMousePos({ x: mx, y: my });
+      if (mx < -0.22) {
+        setActiveSide('left');
+      } else if (mx > 0.22) {
+        setActiveSide('right');
+      } else {
+        setActiveSide(null);
+      }
+    });
   }, []);
 
   const handleMouseLeave = useCallback(() => {
+    if (rafId.current) cancelAnimationFrame(rafId.current);
     setActiveSide(null);
     setMousePos({ x: 0, y: 0 });
   }, []);
@@ -45,33 +48,29 @@ export default function Hero() {
       className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden pt-12 pb-20 sm:pb-28 lg:pb-36"
       style={{ background: 'radial-gradient(ellipse at 50% 40%, #0a0a1a 0%, #050510 100%)' }}
     >
-      {/* ── Dynamic Ambient Glow Orbs (Reaktif terhadap posisi kursor / sisi aktif) ── */}
+      {/* ── Dynamic Ambient Glow Orbs (GPU Accelerated) ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Left Glow: Creative Indigo */}
         <div
-          className="absolute top-1/4 -left-32 w-[650px] h-[650px] rounded-full blur-[160px] transition-all duration-700 ease-out"
+          className="absolute top-1/4 -left-32 w-[600px] h-[600px] rounded-full blur-[140px] pointer-events-none"
           style={{
-            background:
-              activeSide === 'left'
-                ? 'rgba(99, 102, 241, 0.32)'
-                : activeSide === 'right'
-                ? 'rgba(99, 102, 241, 0.05)'
-                : 'rgba(99, 102, 241, 0.14)',
-            transform: `translate(${mousePos.x * -30}px, ${mousePos.y * -20}px)`,
+            background: 'radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, transparent 70%)',
+            opacity: activeSide === 'left' ? 1 : activeSide === 'right' ? 0.2 : 0.45,
+            transform: `translate3d(${mousePos.x * -24}px, ${mousePos.y * -16}px, 0)`,
+            transition: 'opacity 0.5s ease-out, transform 0.25s ease-out',
+            willChange: 'transform, opacity',
           }}
         />
 
         {/* Right Glow: Cyber Cyan */}
         <div
-          className="absolute top-1/4 -right-32 w-[650px] h-[650px] rounded-full blur-[160px] transition-all duration-700 ease-out"
+          className="absolute top-1/4 -right-32 w-[600px] h-[600px] rounded-full blur-[140px] pointer-events-none"
           style={{
-            background:
-              activeSide === 'right'
-                ? 'rgba(34, 211, 238, 0.32)'
-                : activeSide === 'left'
-                ? 'rgba(34, 211, 238, 0.05)'
-                : 'rgba(34, 211, 238, 0.14)',
-            transform: `translate(${mousePos.x * 30}px, ${mousePos.y * -20}px)`,
+            background: 'radial-gradient(circle, rgba(34, 211, 238, 0.35) 0%, transparent 70%)',
+            opacity: activeSide === 'right' ? 1 : activeSide === 'left' ? 0.2 : 0.45,
+            transform: `translate3d(${mousePos.x * 24}px, ${mousePos.y * -16}px, 0)`,
+            transition: 'opacity 0.5s ease-out, transform 0.25s ease-out',
+            willChange: 'transform, opacity',
           }}
         />
 
@@ -144,28 +143,30 @@ export default function Hero() {
               aspectRatio: '447 / 558',
               maxHeight: '65vh',
               transformStyle: 'preserve-3d',
+              willChange: 'transform',
               WebkitMaskImage:
                 'linear-gradient(to bottom, black 0%, black 65%, rgba(0, 0, 0, 0.78) 78%, rgba(0, 0, 0, 0.22) 90%, transparent 100%)',
               maskImage:
                 'linear-gradient(to bottom, black 0%, black 65%, rgba(0, 0, 0, 0.78) 78%, rgba(0, 0, 0, 0.22) 90%, transparent 100%)',
             }}
             animate={{
-              rotateY: mousePos.x * 12, // 3D yaw tilt
-              rotateX: mousePos.y * -8,  // 3D pitch tilt
-              x: mousePos.x * 14,
-              y: mousePos.y * 8,
+              rotateY: mousePos.x * 10, // 3D yaw tilt halus
+              rotateX: mousePos.y * -6,  // 3D pitch tilt halus
+              x: mousePos.x * 12,
+              y: mousePos.y * 6,
             }}
             transition={{
               type: 'spring',
-              stiffness: 120,
-              damping: 18,
-              mass: 0.6,
+              stiffness: 90,
+              damping: 20,
+              mass: 0.5,
             }}
           >
             {/* Organic Breathing Floating Motion Inner Wrapper */}
             <motion.div
               className="w-full h-full"
-              animate={{ y: [-6, 6, -6] }}
+              style={{ willChange: 'transform' }}
+              animate={{ y: [-5, 5, -5] }}
               transition={{
                 duration: 5,
                 repeat: Infinity,
