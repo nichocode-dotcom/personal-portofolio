@@ -2,7 +2,7 @@ import certWebDesign from '../assets/images/goldmedal.jpg';
 import certHackathon from '../assets/images/mapres.jpg';
 import certGemastik from '../assets/images/webdev.jpg';
 import certDicoding from '../assets/images/bpc.jpg';
-import certAmbassador from '../assets/images/Ambassador.jpg';
+import certAmbassador from '../assets/images/ambassador.jpg';
 import certDuta from '../assets/images/duta.jpg';
 
 export const achievements = [
