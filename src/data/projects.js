@@ -1,8 +1,44 @@
 import imagePodomoro from '../assets/images/podomoro.png';
 import imageEdunai from '../assets/images/edunai.jpg';
 import imageZenmood from '../assets/images/zenmood.png';
+import imageGrowpath from '../assets/images/growpath.jpg';
+import imageAlur from '../assets/images/alur.jpg';
+import imageHadirmetrik from '../assets/images/hadirmetrik.jpg';
 
 export const projects = [
+  {
+    id: 4,
+    title: 'UTY Growpath Expo',
+    subtitle: 'Digital Event Platform',
+    description: 'An interactive web platform empowering student entrepreneurs & business tenants.',
+    github: null,
+    demo: 'https://utygrowpath-web.vercel.app/',
+    image: imageGrowpath,
+    placeholder: true,
+    actionLabel: 'Open App',
+  },
+  {
+    id: 5,
+    title: 'Alur',
+    subtitle: 'Smart POS & Retail Audit System',
+    description: 'Automating multi-branch operations and financial audits for growing SMEs.',
+    github: null,
+    demo: 'https://alur-azure.vercel.app/',
+    image: imageAlur,
+    placeholder: true,
+    actionLabel: 'Open App',
+  },
+  {
+    id: 6,
+    title: 'HadirMetrik',
+    subtitle: 'Smart Biometric Attendance & HR Platform',
+    description: 'Face-recognition attendance and smart HR management platform.',
+    github: 'https://github.com/nichocode-dotcom/HadirMetrik',
+    demo: null,
+    image: imageHadirmetrik,
+    placeholder: true,
+    actionLabel: 'Source Code',
+  },
   {
     id: 1,
     title: 'Edunai',

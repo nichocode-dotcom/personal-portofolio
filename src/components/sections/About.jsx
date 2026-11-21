@@ -1,33 +1,39 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import SectionTitle from '../ui/SectionTitle';
 import TypewriterText from '../ui/TypewriterText';
 import { personalInfo } from '../../data/personal';
 import profilePhoto from '../../assets/images/profile1.jpg';
 
+gsap.registerPlugin(ScrollTrigger);
+
 export default function About() {
+  const sectionRef = useRef(null);
+  const cardContainerRef = useRef(null);
+  const textContentRef = useRef(null);
   const cardRef = useRef(null);
+
   const [isHovered, setIsHovered] = useState(false);
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
   const [sheen, setSheen] = useState({ x: 50, y: 50 });
 
+  // 3D Tilt saat mouse hover di dalam card
   const handleMouseMove = useCallback((e) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    // Normalisasi -1 sampai 1
     const normX = (x / rect.width - 0.5) * 2;
     const normY = (y / rect.height - 0.5) * 2;
 
-    // 3D tilt angles (rotasi halus dan presisi)
     setRotate({
       x: normY * -10,
       y: normX * 10,
     });
 
-    // Posisi pantulan kilau cahaya (sheen)
     setSheen({
       x: Math.round((x / rect.width) * 100),
       y: Math.round((y / rect.height) * 100),
@@ -40,38 +46,125 @@ export default function About() {
     setRotate({ x: 0, y: 0 });
   };
 
-  return (
-    <section id="about" className="section-padding relative overflow-hidden select-none">
-      {/* Background glow accent */}
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-96 h-96 bg-accent-indigo/[0.04] rounded-full blur-[140px] pointer-events-none" />
+  // GSAP Cinematic Scroll Animation
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Cek apakah layar desktop/tablet (>= 768px)
+      const isDesktop = window.innerWidth >= 768;
 
+      if (!isDesktop) {
+        // Tampilan mobile: animasi smooth fade-up sederhana
+        gsap.fromTo(
+          cardContainerRef.current,
+          { opacity: 0, y: 40 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 65%',
+              toggleActions: 'play none none none',
+            },
+          }
+        );
+        gsap.fromTo(
+          textContentRef.current.children,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 60%',
+              toggleActions: 'play none none none',
+            },
+          }
+        );
+        return;
+      }
+
+      // DESKTOP CINEMATIC FLIP & SWEEP
+      // Posisi awal: Card tepat di TENGAH horizontal section
+      // Jarak pergeseran dihitung dari selisih posisi col-5 ke tengah
+      const cardEl = cardContainerRef.current;
+      const textChildren = textContentRef.current ? Array.from(textContentRef.current.children) : [];
+
+      // Hitung offset agar posisi awal card berada pas di tengah container 12-col
+      const containerWidth = sectionRef.current.querySelector('.section-container').offsetWidth;
+      const initialShiftX = (containerWidth * 0.58) / 2; // bergeser ke tengah layar
+
+      // Set initial state
+      gsap.set(cardEl, {
+        x: initialShiftX,
+        rotationY: -180, // Berawal dari posisi flip belakang
+        scale: 0.95,
+        transformPerspective: 1400,
+        transformOrigin: '50% 50%',
+      });
+
+      gsap.set(textChildren, {
+        opacity: 0,
+        x: -80,
+      });
+
+      // Master Timeline yang dipicu saat user scroll mendekati pertengahan section
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          // Mulai saat section masuk 45% (mendekati tengah viewport)
+          start: 'top 45%',
+          toggleActions: 'play none none none',
+        },
+      });
+
+      // Step 1: Card berputar (flip 180 deg) dan meluncur mulus ke sisi kiri
+      tl.to(cardEl, {
+        x: 0,
+        rotationY: 0,
+        scale: 1,
+        duration: 1.6,
+        ease: 'power3.inOut',
+      });
+
+      // Step 2: Teks ditarik keluar dari arah kiri (jalur card) secara mulus
+      tl.to(
+        textChildren,
+        {
+          opacity: 1,
+          x: 0,
+          duration: 1.2,
+          stagger: 0.2,
+          ease: 'power3.out',
+        },
+        '-=0.9' // Mulai overlap ketika card sedang separuh jalan menuju kiri
+      );
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section ref={sectionRef} id="about" className="section-padding relative overflow-hidden select-none">
       <div className="section-container relative z-10">
         <SectionTitle
           title="About Me"
           subtitle={<TypewriterText text="Get to know the person behind the code" speed={40} />}
         />
 
-        <div className="grid md:grid-cols-12 gap-10 md:gap-14 lg:gap-16 items-center max-w-6xl mx-auto">
-          {/* SISI KIRI: Interactive 3D Holographic Card + Behind The Code Tag (No Border) */}
+        <div className="grid md:grid-cols-12 gap-10 md:gap-14 lg:gap-16 items-center max-w-6xl mx-auto overflow-hidden pt-4">
+          {/* SISI KIRI: Card berawal di tengah, flip & meluncur ke kiri via GSAP (Tanpa Glow Blur Belakang) */}
           <div className="md:col-span-5 flex flex-col items-center justify-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 0.7, ease: 'easeOut' }}
+            <div
+              ref={cardContainerRef}
               className="relative w-full max-w-[340px] sm:max-w-[380px] md:max-w-[400px] lg:max-w-[420px] group"
-              style={{ perspective: 1000 }}
+              style={{ perspective: 1400 }}
             >
-              {/* Ambient diffuse glow behind the photo - mekar lebih terang saat di-hover */}
-              <div
-                className="absolute -inset-4 bg-gradient-to-tr from-accent-indigo/35 via-accent-cyan/25 to-blue-600/20 rounded-3xl blur-2xl pointer-events-none transition-all duration-500 ease-out"
-                style={{
-                  opacity: isHovered ? 0.95 : 0.55,
-                  transform: `scale(${isHovered ? 1.08 : 1})`,
-                }}
-              />
-
-              {/* Main Photo 3D Card - Completely borderless, spring physics tilt */}
+              {/* Main Photo 3D Card */}
               <motion.div
                 ref={cardRef}
                 onMouseMove={handleMouseMove}
@@ -89,7 +182,7 @@ export default function About() {
                   mass: 0.5,
                 }}
                 style={{ transformStyle: 'preserve-3d' }}
-                className="relative aspect-[4/5] w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-dark-surface shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_40px_rgba(99,102,241,0.18)] cursor-pointer"
+                className="relative aspect-[4/5] w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-dark-surface shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)] cursor-pointer"
               >
                 {/* Gambar Foto Profil */}
                 <img
@@ -120,58 +213,78 @@ export default function About() {
 
                 {/* Subtle soft vignette overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-dark/50 via-transparent to-transparent pointer-events-none opacity-50 group-hover:opacity-30 transition-opacity duration-500" />
-
-
               </motion.div>
-            </motion.div>
+            </div>
           </div>
 
-          {/* SISI KANAN: Narrative Story & Key Stats (7 cols) */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.7, delay: 0.1, ease: 'easeOut' }}
-            className="md:col-span-7 space-y-6"
+          {/* SISI KANAN: Konten ditarik/unveil dari arah kiri secara mulus dengan GSAP */}
+          <div
+            ref={textContentRef}
+            className="md:col-span-7 flex flex-col justify-center gap-7 lg:gap-9"
           >
-            {/* Live Status Pill */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              Interesting in Join the Web Development team
+            {/* Location Tag */}
+            <div>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-slate-300 text-xs font-mono">
+                <span className="w-2 h-2 rounded-full bg-accent-cyan animate-pulse" />
+                Yogyakarta, Indonesia
+              </div>
             </div>
 
-            <div className="space-y-4">
-              <h3 className="text-2xl sm:text-3xl font-heading font-bold text-white leading-tight">
-                Crafting digital experiences where <span className="gradient-text">design meets code</span>.
-              </h3>
-              <p className="text-slate-300 leading-relaxed text-sm md:text-base font-body">
-                Hai, I&apos;m Nicho, a Frontend Developer who enjoys turning ideas into websites that are clear, responsive, and easy to use.
-              </p>
-              <p className="text-slate-400 leading-relaxed text-sm md:text-base font-body">
-                I'm especially interested in building websites for some eventes, places where people can find the schedule, speakers, and registration details they need. 
+            {/* Intro Paragraph (English) */}
+            <div>
+              <p className="text-sm sm:text-base md:text-[17px] font-body text-slate-300 leading-relaxed font-normal">
+                Hi, I&apos;m Nicho. I build responsive websites with clear layouts and thoughtful details, making them easy to use on any device. Have a project in mind? Let&apos;s collaborate with me.
               </p>
             </div>
 
-            {/* Quick Metrics / Stats Grid */}
-            <div className="grid grid-cols-3 gap-3 pt-2">
-              {personalInfo.stats.map((stat) => (
-                <div
-                  key={stat.label}
-                  className="glass-light p-3.5 sm:p-4 rounded-xl border border-white/[0.08] text-center"
-                >
-                  <div className="text-xl sm:text-2xl font-heading font-bold text-white mb-0.5">
-                    {stat.value}
+            {/* Key Focus & Highlights */}
+            <div className="pt-2 space-y-4">
+              <p className="text-xs font-mono uppercase tracking-[0.18em] text-slate-400">
+                Core Competencies & Focus
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                {[
+                  {
+                    num: '01 / FOCUS',
+                    title: 'Web Applications',
+                    desc: 'Useful tools and experiences built for the web',
+                    color: 'text-accent-cyan',
+                    hoverBorder: 'hover:border-accent-cyan/30',
+                  },
+                  {
+                    num: '02 / CRAFT',
+                    title: 'UI Engineering',
+                    desc: 'Responsive interface, micro-interactions & accessibility',
+                    color: 'text-accent-indigo',
+                    hoverBorder: 'hover:border-accent-indigo/30',
+                  },
+                  {
+                    num: '03 / STACK',
+                    title: 'Frontend Stack',
+                    desc: 'Next, React, Tailwind CSS, Vite & Framer Motion',
+                    color: 'text-emerald-400',
+                    hoverBorder: 'hover:border-emerald-400/30',
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.num}
+                    className={`p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] ${item.hoverBorder} transition-colors group cursor-default`}
+                  >
+                    <div className={`text-xs font-mono ${item.color} mb-1.5`}>{item.num}</div>
+                    <div className="text-sm font-semibold text-white group-hover:text-white transition-colors">
+                      {item.title}
+                    </div>
+                    <div className="text-xs text-slate-400 mt-1 leading-normal">
+                      {item.desc}
+                    </div>
                   </div>
-                  <div className="text-[11px] font-mono text-slate-400 leading-tight">
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>
   );
 }
-
