@@ -108,6 +108,48 @@
   }
 }
 
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .project-story-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+  }
+
+  .project-story-section .section-container > div:first-child {
+    margin-bottom: clamp(1rem, 3vh, 2rem);
+  }
+
+  .project-story-viewport {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    padding-block: 2.5rem;
+    overflow: visible;
+  }
+
+  .project-story-track {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    gap: 3.5rem; /* Memberikan ruang lega agar kartu spotlight tidak berhimpitan */
+    padding: 0 4rem;
+    will-change: transform;
+  }
+
+  .project-story-card {
+    flex: 0 0 clamp(20rem, 26vw, 25rem);
+    transform-origin: center center;
+    transition: border-color 0.4s ease, box-shadow 0.4s ease, background-color 0.4s ease;
+    will-change: transform, opacity;
+  }
+
+  /* Efek visual ketika kartu berada di Spotlight Tengah */
+  .project-story-card.is-spotlight {
+    border-color: rgba(34, 211, 238, 0.45) !important;
+    box-shadow: 0 20px 50px -10px rgba(34, 211, 238, 0.25), 0 0 30px rgba(99, 102, 241, 0.2) !important;
+    background-color: rgba(18, 18, 30, 0.85) !important;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
