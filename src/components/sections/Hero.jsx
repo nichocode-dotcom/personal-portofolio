@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { personalInfo } from '../../data/personal';
 import { scrollToSection } from '../../utils/scroll';
 import TypewriterText from '../ui/TypewriterText';
-import heroReal from '../../assets/images/hero_real.png';
+import heroReal from '../../assets/images/hero_real.webp';
 
 export default function Hero() {
   const [activeSide, setActiveSide] = useState(null); // 'left' | 'right' | null
@@ -373,4 +373,3 @@ export default function Hero() {
     </section>
   );
 }
-

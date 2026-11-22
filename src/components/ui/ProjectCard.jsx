@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import { FaGithub } from 'react-icons/fa';
 import { HiOutlineExternalLink } from 'react-icons/hi';
+import ImageWithSkeleton from './ImageWithSkeleton';
 
 const ProjectCard = forwardRef(function ProjectCard({ project, className = '' }, ref) {
   return (
@@ -20,9 +21,10 @@ const ProjectCard = forwardRef(function ProjectCard({ project, className = '' },
       {/* Thumbnail area */}
       <div className="relative h-52 w-full overflow-hidden bg-dark/60 flex items-center justify-center">
         {project.image ? (
-          <img
+          <ImageWithSkeleton
             src={Array.isArray(project.image) ? project.image[0] : project.image}
             alt={project.title}
+            containerClassName="w-full h-full"
             className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
           />
         ) : (

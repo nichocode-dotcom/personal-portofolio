@@ -1,22 +1,22 @@
 import certWebDesign from '../assets/images/goldmedal.jpg';
 import certHackathon from '../assets/images/mapres.jpg';
 import certGemastik from '../assets/images/webdev.jpg';
-import certDicoding from '../assets/images/bpc.jpg';
-import certAmbassador from '../assets/images/ambassador.jpg';
+import certDicoding from '../assets/images/bpc.webp';
+import certAmbassador from '../assets/images/ambassador.webp';
 import certDuta from '../assets/images/duta.jpg';
 
 // Speaker / Moderator Assets
-import speakerDII from '../assets/speaker/Speaker_DII.png';
-import speakerIYEBA from '../assets/speaker/Speaker_IYEBA.jpeg';
-import speakerKomunitas from '../assets/speaker/Speaker_Komunitas Remaja Aktif.jpeg';
-import speakerYIT from '../assets/speaker/Speaker_YIT.jpg';
-import moderatorDII from '../assets/speaker/Moderator.jpeg';
+import speakerDII from '../assets/speaker/Speaker_DII.webp';
+import speakerIYEBA from '../assets/speaker/Speaker_IYEBA.webp';
+import speakerKomunitas from '../assets/speaker/Speaker_Komunitas Remaja Aktif.webp';
+import speakerYIT from '../assets/speaker/Speaker_YIT.webp';
+import moderatorDII from '../assets/speaker/Moderator.webp';
 
 // Licenses Assets
 import licDataAnalysis from '../assets/licenses/data_analysis.png';
 import licDataScience from '../assets/licenses/data_science.png';
-import licDataViz from '../assets/licenses/data_visualization.png';
-import licKagglePandas from '../assets/licenses/Kaggle-Pandas-Sertifikat.png';
+import licDataViz from '../assets/licenses/data_visualization.webp';
+import licKagglePandas from '../assets/licenses/Kaggle-Pandas-Sertifikat.webp';
 import licPython from '../assets/licenses/python.png';
 import licSoftwareEng from '../assets/licenses/software_enggineering.png';
 

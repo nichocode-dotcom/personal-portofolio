@@ -4,8 +4,9 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import SectionTitle from '../ui/SectionTitle';
 import TypewriterText from '../ui/TypewriterText';
+import ImageWithSkeleton from '../ui/ImageWithSkeleton';
 import { personalInfo } from '../../data/personal';
-import profilePhoto from '../../assets/images/profile1.jpg';
+import profilePhoto from '../../assets/images/profile1.webp';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -185,9 +186,10 @@ export default function About() {
                 className="relative aspect-[4/5] w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-dark-surface shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)] cursor-pointer"
               >
                 {/* Gambar Foto Profil */}
-                <img
+                <ImageWithSkeleton
                   src={profilePhoto}
                   alt={personalInfo.name}
+                  containerClassName="w-full h-full"
                   className="w-full h-full object-cover object-top pointer-events-none transition-transform duration-700 ease-out"
                 />
 

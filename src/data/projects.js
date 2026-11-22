@@ -1,8 +1,8 @@
-import imagePodomoro from '../assets/images/podomoro.png';
+import imagePodomoro from '../assets/images/podomoro.webp';
 import imageEdunai from '../assets/images/edunai.jpg';
-import imageZenmood from '../assets/images/zenmood.png';
-import imageGrowpath from '../assets/images/growpath.jpg';
-import imageAlur from '../assets/images/alur.jpg';
+import imageZenmood from '../assets/images/zenmood.webp';
+import imageGrowpath from '../assets/images/growpath.webp';
+import imageAlur from '../assets/images/alur.webp';
 import imageHadirmetrik from '../assets/images/hadirmetrik.jpg';
 
 export const projects = [

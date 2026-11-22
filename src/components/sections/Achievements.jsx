@@ -4,6 +4,7 @@ import { FaTimes, FaChevronLeft, FaChevronRight, FaChevronDown, FaThLarge } from
 import { HiOutlineDocumentText } from 'react-icons/hi';
 import SectionTitle from '../ui/SectionTitle';
 import TypewriterText from '../ui/TypewriterText';
+import ImageWithSkeleton from '../ui/ImageWithSkeleton';
 import { achievements, speakerCertificates, licenseCertificates } from '../../data/achievements';
 
 const accentStyles = {
@@ -317,9 +318,10 @@ export default function Achievements() {
                   }}
                 >
                   <div className="relative w-full h-full bg-dark-surface rounded-2xl overflow-hidden group">
-                    <img
+                    <ImageWithSkeleton
                       src={item.image}
                       alt={item.title}
+                      containerClassName="w-full h-full"
                       className="w-full h-full object-cover object-center pointer-events-none transition-transform duration-500 group-hover:scale-105"
                     />
 
@@ -432,9 +434,10 @@ export default function Achievements() {
                     >
                       {/* Thumbnail Image Container */}
                       <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-dark-lighter mb-4">
-                        <img
+                        <ImageWithSkeleton
                           src={item.image}
                           alt={item.title}
+                          containerClassName="w-full h-full"
                           className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-dark/60 via-transparent to-transparent opacity-40 group-hover:opacity-20 transition-opacity" />
@@ -499,9 +502,10 @@ export default function Achievements() {
 
             {/* Modal Certificate Image Preview */}
             <div className="relative rounded-xl overflow-hidden border border-white/10 w-fit max-w-full mx-auto">
-              <img
+              <ImageWithSkeleton
                 src={selectedCert.image}
                 alt={selectedCert.title}
+                containerClassName="w-full h-full"
                 className="block w-full h-auto max-h-[65vh] object-contain rounded-xl"
               />
             </div>
