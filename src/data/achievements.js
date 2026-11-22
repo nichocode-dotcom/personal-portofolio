@@ -5,6 +5,21 @@ import certDicoding from '../assets/images/bpc.jpg';
 import certAmbassador from '../assets/images/ambassador.jpg';
 import certDuta from '../assets/images/duta.jpg';
 
+// Speaker / Moderator Assets
+import speakerDII from '../assets/speaker/Speaker_DII.png';
+import speakerIYEBA from '../assets/speaker/Speaker_IYEBA.jpeg';
+import speakerKomunitas from '../assets/speaker/Speaker_Komunitas Remaja Aktif.jpeg';
+import speakerYIT from '../assets/speaker/Speaker_YIT.jpg';
+import moderatorDII from '../assets/speaker/Moderator.jpeg';
+
+// Licenses Assets
+import licDataAnalysis from '../assets/licenses/data_analysis.png';
+import licDataScience from '../assets/licenses/data_science.png';
+import licDataViz from '../assets/licenses/data_visualization.png';
+import licKagglePandas from '../assets/licenses/Kaggle-Pandas-Sertifikat.png';
+import licPython from '../assets/licenses/python.png';
+import licSoftwareEng from '../assets/licenses/software_enggineering.png';
+
 export const achievements = [
   {
     id: 1,
@@ -45,7 +60,7 @@ export const achievements = [
     issuer: 'INSPIRE 1.0 2026',
     image: certDicoding,
     pdfUrl: '#',
-    accentColor: 'emerald',
+    accentColor: 'amber',
     stats: 'Grade A — 98%',
   },
   {
@@ -68,5 +83,88 @@ export const achievements = [
     image: certDuta,
     pdfUrl: '#',
     accentColor: 'amber',
+  },
+];
+
+export const speakerCertificates = [
+  {
+    id: 'spk-1',
+    title: 'Speaker - Duta Inspirasi Indonesia',
+    summary: 'Sharing insights on consistency and perseverance as the keys to the 2045 Golden Generation in Indonesian.',
+    image: speakerDII,
+    accentColor: 'amber',
+  },
+  {
+    id: 'spk-2',
+    title: 'Speaker - International Youth Exchange Brand Ambassador',
+    summary: 'Delivered discussions on cross cultural collaboration, SDGs, and digital initiatives for youth leaders.',
+    image: speakerIYEBA,
+    accentColor: 'rose',
+  },
+  {
+    id: 'spk-3',
+    title: 'Speaker & Facilitator - Komunitas Remaja Aktif',
+    summary: 'Sharing insights on how to master public speaking skills and techniques for understanding the audience.',
+    image: speakerKomunitas,
+    accentColor: 'cyan',
+  },
+  {
+    id: 'spk-4',
+    title: "Speaker - Youth In Space's",
+    summary: 'Sharing insights on how to cultivate a positive mindset in everyday life.',
+    image: speakerYIT,
+    accentColor: 'violet',
+  },
+  {
+    id: 'spk-5',
+    title: 'Moderator - Duta Inspirasi Indoensia',
+    summary: 'Served as the moderator for the “LIVE Sapa Alumni” event, with the theme is enjoying youth with joy.',
+    image: moderatorDII,
+    accentColor: 'rose',
+  },
+];
+
+export const licenseCertificates = [
+  {
+    id: 'lic-1',
+    title: 'Software Engineering Competency Certification',
+    summary: 'Verified competency in software design principles, architecture, system development life cycle, and best practices.',
+    image: licSoftwareEng,
+    accentColor: 'violet',
+  },
+  {
+    id: 'lic-2',
+    title: 'Python Programming Certification',
+    summary: 'Certification covering core Python concepts, object-oriented programming, data structures, and automation.',
+    image: licPython,
+    accentColor: 'cyan',
+  },
+  {
+    id: 'lic-3',
+    title: 'Data Analysis Professional Certificate',
+    summary: 'Credential in data wrangling, exploratory data analysis, pattern recognition, and business intelligence.',
+    image: licDataAnalysis,
+    accentColor: 'amber',
+  },
+  {
+    id: 'lic-4',
+    title: 'Data Science & Machine Learning Foundations',
+    summary: 'Demonstrated skills in statistical modeling, predictive analytics, and algorithmic data processing.',
+    image: licDataScience,
+    accentColor: 'emerald',
+  },
+  {
+    id: 'lic-5',
+    title: 'Data Visualization & Dashboarding',
+    summary: 'Expertise in translating complex data sets into intuitive charts, infographics, and interactive dashboards.',
+    image: licDataViz,
+    accentColor: 'rose',
+  },
+  {
+    id: 'lic-6',
+    title: 'Kaggle Pandas Certificate',
+    summary: 'Verified proficiency in manipulating, grouping, indexing, and structuring tabular datasets with Pandas library.',
+    image: licKagglePandas,
+    accentColor: 'cyan',
   },
 ];

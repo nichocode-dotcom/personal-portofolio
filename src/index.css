@@ -108,6 +108,44 @@
   }
 }
 
+/* ── Mobile / Tablet Fallback for Projects (< 1024px) ── */
+@media (max-width: 1023px) {
+  .project-story-section {
+    padding-top: 4rem;
+    padding-bottom: 5rem;
+  }
+
+  .project-story-viewport {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none; /* Hide scrollbar for clean UI */
+    -ms-overflow-style: none;
+  }
+
+  .project-story-viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .project-story-track {
+    display: flex;
+    gap: 1rem;
+    width: max-content;
+    padding: 0 max(1rem, calc((100% - clamp(18rem, 88vw, 24rem)) / 2));
+  }
+
+  .project-story-card {
+    flex: 0 0 clamp(18rem, 88vw, 24rem);
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
+
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
   .project-story-section {
     min-height: 100vh;

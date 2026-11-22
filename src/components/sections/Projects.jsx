@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import SectionTitle from '../ui/SectionTitle';
 import ProjectCard from '../ui/ProjectCard';
 import TypewriterText from '../ui/TypewriterText';
@@ -12,6 +13,11 @@ export default function Projects() {
   const sectionRef = useRef(null);
   const trackRef = useRef(null);
   const viewportRef = useRef(null);
+  const scrollTriggerInstance = useRef(null);
+  const [activeProjectIndex, setActiveProjectIndex] = useState(0);
+  const [mobileIndex, setMobileIndex] = useState(0);
+
+  const n = projects.length;
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -21,8 +27,7 @@ export default function Projects() {
         const track = trackRef.current;
         const viewport = viewportRef.current;
         const cards = gsap.utils.toArray('.project-card', track);
-        const n = cards.length;
-        if (n === 0) return;
+        if (cards.length === 0) return;
 
         // Reset track posisi untuk kalkulasi akurat
         gsap.set(track, { x: 0 });
@@ -42,7 +47,7 @@ export default function Projects() {
         // Set posisi awal track pas di tengah
         gsap.set(track, { x: initialOffset });
 
-        // Kartu pertama menyala sebagai spotlight utama di awal (tanpa blur apapun)
+        // Kartu pertama menyala sebagai spotlight utama di awal
         cards.forEach((card, i) => {
           if (i === 0) {
             gsap.set(card, {
@@ -56,7 +61,7 @@ export default function Projects() {
             gsap.set(card, {
               scale: 0.9,
               opacity: 0.65,
-              filter: 'none', // Pastikan jernih dan tidak buram
+              filter: 'none',
               zIndex: 1,
             });
             card.classList.remove('is-spotlight');
@@ -67,19 +72,26 @@ export default function Projects() {
         const totalTravel = stepDistance * (n - 1);
 
         // Master Timeline dengan ScrollTrigger Pin
-        // scrub: 0.6 memberikan peredam kejut (momentum smoothing) agar putaran gerigi wheel mouse terasa lembut seperti mentega tanpa jeda
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: sectionRef.current,
             pin: true,
             start: 'top top',
             end: () => `+=${totalTravel * 1.5}`,
-            scrub: 0.6, // Halus dan tetap 100% mengikuti scroll
+            scrub: 0.6,
             invalidateOnRefresh: true,
             anticipatePin: 1,
             fastScrollEnd: true,
+            onUpdate: (self) => {
+              // Pantau index kartu aktif untuk navigasi tombol panah
+              const progress = self.progress;
+              const curIndex = Math.min(n - 1, Math.max(0, Math.round(progress * (n - 1))));
+              setActiveProjectIndex(curIndex);
+            },
           },
         });
+
+        scrollTriggerInstance.current = tl.scrollTrigger;
 
         // 1. Geser track dari kartu pertama sampai kartu terakhir tiba di center
         tl.to(track, {
@@ -88,8 +100,7 @@ export default function Projects() {
           ease: 'none',
         }, 0);
 
-        // 2. Interpolasi transisi Spotlight:
-        // Hindari animasi 'filter: blur' di GPU saat pergeseran kontinu karena menyebabkan micro-stutter
+        // 2. Interpolasi transisi Spotlight
         for (let i = 0; i < n - 1; i++) {
           const currentCard = cards[i];
           const nextCard = cards[i + 1];
@@ -124,7 +135,62 @@ export default function Projects() {
     }, sectionRef);
 
     return () => ctx.revert();
+  }, [n]);
+
+  // Sync active index on mobile scroll
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    const handleMobileScroll = () => {
+      if (window.innerWidth >= 1024) return;
+      const cards = viewport.querySelectorAll('.project-story-card');
+      if (!cards.length) return;
+
+      const viewportCenter = viewport.getBoundingClientRect().left + viewport.clientWidth / 2;
+      let closestIdx = 0;
+      let minDiff = Infinity;
+
+      cards.forEach((card, idx) => {
+        const rect = card.getBoundingClientRect();
+        const cardCenter = rect.left + rect.width / 2;
+        const diff = Math.abs(viewportCenter - cardCenter);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestIdx = idx;
+        }
+      });
+
+      setMobileIndex(closestIdx);
+    };
+
+    viewport.addEventListener('scroll', handleMobileScroll, { passive: true });
+    return () => viewport.removeEventListener('scroll', handleMobileScroll);
   }, []);
+
+  // Handler Scroll Mobile ke Card Tertentu
+  const scrollMobileTo = (index) => {
+    const targetIdx = Math.max(0, Math.min(n - 1, index));
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const cards = viewport.querySelectorAll('.project-story-card');
+    if (cards[targetIdx]) {
+      cards[targetIdx].scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest',
+      });
+      setMobileIndex(targetIdx);
+    }
+  };
+
+  const prevMobileProject = () => {
+    scrollMobileTo(mobileIndex - 1);
+  };
+
+  const nextMobileProject = () => {
+    scrollMobileTo(mobileIndex + 1);
+  };
 
   return (
     <section ref={sectionRef} id="projects" className="project-story-section section-padding bg-dark-surface/30 relative overflow-hidden">
@@ -143,16 +209,43 @@ export default function Projects() {
           />
         </div>
 
-        {/* Viewport & Horizontal Spotlight Track */}
-        <div ref={viewportRef} className="project-story-viewport py-6 w-full">
-          <div ref={trackRef} className="project-story-track flex items-center">
-            {projects.map((project) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                className="project-story-card flex-shrink-0"
-              />
-            ))}
+        {/* Viewport & Horizontal Spotlight Track dengan Tombol Left & Right */}
+        <div className="relative w-full flex items-center justify-center">
+          {/* Left Arrow Button (Mobile only) */}
+          <button
+            onClick={prevMobileProject}
+            disabled={mobileIndex === 0}
+            aria-label="Previous project"
+            className={`flex lg:hidden absolute left-2 sm:left-4 z-30 w-10 h-10 rounded-full bg-dark/90 border border-white/20 text-white items-center justify-center transition-all duration-200 shadow-2xl backdrop-blur-md cursor-pointer ${
+              mobileIndex === 0 ? 'opacity-20 cursor-not-allowed' : 'hover:scale-105 active:scale-95 border-accent-cyan/50 text-accent-cyan'
+            }`}
+          >
+            <FaChevronLeft className="text-xs" />
+          </button>
+
+          {/* Right Arrow Button (Mobile only) */}
+          <button
+            onClick={nextMobileProject}
+            disabled={mobileIndex === n - 1}
+            aria-label="Next project"
+            className={`flex lg:hidden absolute right-2 sm:right-4 z-30 w-10 h-10 rounded-full bg-dark/90 border border-white/20 text-white items-center justify-center transition-all duration-200 shadow-2xl backdrop-blur-md cursor-pointer ${
+              mobileIndex === n - 1 ? 'opacity-20 cursor-not-allowed' : 'hover:scale-105 active:scale-95 border-accent-cyan/50 text-accent-cyan'
+            }`}
+          >
+            <FaChevronRight className="text-xs" />
+          </button>
+
+          {/* Viewport Track */}
+          <div ref={viewportRef} className="project-story-viewport py-6 w-full">
+            <div ref={trackRef} className="project-story-track flex items-center">
+              {projects.map((project) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  className="project-story-card flex-shrink-0"
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
